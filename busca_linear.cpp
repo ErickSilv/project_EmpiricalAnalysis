@@ -22,7 +22,7 @@ int main() {
 	int A[] = {1 ,5 ,10, 15, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
 	int size_a = sizeof(A)/sizeof(int);
 		
-		auto result = ternary_search_recursive(begin(A), end(A), 0);
+		auto result = binary_search_recursive(begin(A), end(A), 0);
 		cout << 0 << " >>> " << result <<  endl;
 		assert(result == -1);
 	
@@ -31,8 +31,6 @@ int main() {
 		cout << result << " >>> " << A[i] << " >>> " << &A[i] << endl;
 		assert(result == i);
 	}	
-
-		
 
 		result = ternary_search_recursive(begin(A), end(A), 110);
 		cout << 110 << " >>> "<< result <<  endl;
@@ -99,6 +97,8 @@ int linear_search_recursive(param_type* first, param_type* last, param_type key)
 
 int binary_search_interactive(param_type* first, param_type* last, param_type key) {
 
+	auto aux(first);
+
 	if (key < *first || key > *(last-1)) {
 
 		return -1;
@@ -121,7 +121,7 @@ int binary_search_interactive(param_type* first, param_type* last, param_type ke
 		
 		} else {
 			
-			return *(first + (size_a/2));
+			return first + (size_a/2) - aux;
 		
 		}
 		size_a = last - first;
@@ -181,9 +181,9 @@ int ternary_search_recursive(param_type* first, param_type* last, param_type key
 	auto size_a(last-first);
 
 	int first_divide = 	size_a/3;
-	int second_divide = (size_a/3)*2 + 1;
+	int second_divide = (size_a/3)*2 - 1;
 
-	if ( first > last ) {
+	if ( first - last > 0 ) {
 	
 		return -1;
 	
@@ -216,5 +216,4 @@ int ternary_search_recursive(param_type* first, param_type* last, param_type key
 
 		}	
 	}
-	
 }
