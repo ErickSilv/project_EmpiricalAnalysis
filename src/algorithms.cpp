@@ -4,7 +4,7 @@
 #include "../include/algorithms.h"
 
 // List of all possible flags
-// | ILS | RLS | SLS | RBS | SBS | ITS | RTS | ALL |
+// | ILS | RLS | SLS | IBS | RBS | SBS | ITS | RTS | ALL |
 
 // Iterative Linear Search [ILS]
 /*!
@@ -123,7 +123,7 @@ int binarySearch_std ( int* first, int* last, int target ) {
 
 }
 
-//
+// Interactive ternary Search [ITS]
 int ternarySearch_it( int* first, int* last, int target ) {
     int index = ternarySearch_rc( first , last , target );
     if (index!=-1) {
