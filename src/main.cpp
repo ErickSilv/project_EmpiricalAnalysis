@@ -7,7 +7,7 @@
 
 #include "../include/algorithms.h"
 
-#define MAX_RANGE 536870912 //2²⁹
+#define MAX_RANGE 18384 //2²⁹
 
 
 typedef int ptr(int*, int*, int);
@@ -28,7 +28,7 @@ void randomFill( std::vector<int> &V, const int lower, const int upper,
 
 int main () {
 
-	auto arrSz(4096ul);
+	auto arrSz(536870912ul);
 	std::chrono::duration<double, std::milli> database[25][8]; 
 	int target, count;
 
@@ -59,7 +59,7 @@ int main () {
     std::cin >> target;
 
 
-    for ( auto i(32), count = 0; i < MAX_RANGE; i *= 2, count++) {
+    for ( auto i(64), count = 0; i <= 4096; i *= 4, count++) {
 
     	for ( auto j(0); j < 8; ++j ) {
 
@@ -69,7 +69,7 @@ int main () {
 
     			auto start = std::chrono::steady_clock::now();
 
-    		    fun_ptr[j](&V.front(), &V[32], target);
+    		    fun_ptr[j](&V.front(), &V[i], target);
 
     			auto end = std::chrono::steady_clock::now();
 
@@ -89,7 +89,7 @@ int main () {
    std::cout.precision(6);
    std::cout << ">>> | ILS | RLS | SLS | RBS | SBS | ITS | RTS | ALL | \n";
    
-   for (auto i(32), count=0; i < MAX_RANGE; i*=2, count++) {
+   for (auto i(64), count=0; i < MAX_RANGE; i*=4, count++) {
         
         std::cout << i << " | ";
 

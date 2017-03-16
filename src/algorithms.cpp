@@ -123,12 +123,47 @@ int binarySearch_std ( int* first, int* last, int target ) {
 
 }
 
-// Iterative Ternary Search [ITS]
+//
 int ternarySearch_it( int* first, int* last, int target ) {
-    return -2; // Not implemented yet
+    int index = ternarySearch_rc( first , last , target );
+    if (index!=-1) {
+        int* position = std::lower_bound( first , last , target );
+        return (position - first);
+    } else {
+        return -1;
+    }
 }
 
 // Recursive Ternary Search [RTS]
 int ternarySearch_rc( int* first, int* last, int target ) {
-    return -2; // Not implemented yet
+
+    if (first > last) {
+        return -1;
+    }
+
+    int* t1 = first + (last - first) / 2;
+    int* t2 = first + ((last - first)/3)*2;
+
+    if (*t1 == target) {
+        return t1 - first;
+    } else if (*t2 == target) {
+        return t2 - first;
+    } else if ( target < *t1 ) {
+        return ternarySearch_rc( first , t1 - 1 , target );
+    } else if ( target < *t2 ) {
+        int value = ternarySearch_rc( t1 + 1 , t2 - 1 , target );
+        if (value != -1) {
+            return value + ( (t1 + 1) - first ); 
+        } else {
+            return -1;
+        }
+    } else if ( target > *t2 ) {
+        int value = ternarySearch_rc( t2 + 1 , last , target );
+        if (value != -1) {
+            return value + ( (t2 + 1) - first ); 
+        } else {
+            return -1;
+        }
+    } 
+
 }
