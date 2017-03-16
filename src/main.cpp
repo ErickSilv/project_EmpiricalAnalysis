@@ -30,7 +30,9 @@ int main () {
 
 	auto arrSz(32ul);
 	double data, sum_data;
+	double database[25][8]; 
 	int target;
+
 
 	//int *(*func_ptr) (int* first, int* last, int target);
 	ptr *func_ptr[8] = {seqSearch_it, 
@@ -54,12 +56,14 @@ int main () {
 
     std::sort(V.begin(), V.end());
 
+    for (auto i)
+
 
     std::cout << "Número a ser buscado : " << std::endl;
     std::cin >> target;
 
 
-    for ( auto i(32); i < MAX_RANGE; i *= 4 ) {
+    for ( auto i(32), auto z(0); i < MAX_RANGE; i *= 4, z++) {
 
     	for ( auto j(0); j < 8; ++j ) {
 
@@ -67,7 +71,17 @@ int main () {
     		
     		for ( auto k(0); k < 100; k++) {
 
-    			fun_ptr[j](V.begin(), V.begin()+i, target);
+    			auto start = std::chrono::steady_clock::now();
+
+    			fun_ptr[j] (V.begin(), V.begin()+i, target);
+
+    			auto end = std::chrono::steady_clock::now();
+
+    			auto diff = end - start;
+
+    			sum_data += diff;
+
+    			
 
     		}
 
