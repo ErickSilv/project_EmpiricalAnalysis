@@ -7,7 +7,7 @@
 
 #include "../include/algorithms.h"
 
-#define MAX_RANGE 536870912
+#define MAX_RANGE 536870912 //2²⁹
 
 
 typedef int ptr(int*, int*, int);
@@ -28,14 +28,13 @@ void randomFill( std::vector<int> &V, const int lower, const int upper,
 
 int main () {
 
-	auto arrSz(32ul);
-	double data, sum_data;
-	double database[25][8]; 
-	int target;
+	auto arrSz(4096ul);
+	std::chrono::duration<double, std::milli> database[25][8]; 
+	int target, count;
 
 
 	//int *(*func_ptr) (int* first, int* last, int target);
-	ptr *func_ptr[8] = {seqSearch_it, 
+	ptr *fun_ptr[8] = { seqSearch_it, 
 					  	seqSearch_rc,
 					    seqSearch_std, 
 					  	binarySearch_it, 
@@ -50,30 +49,27 @@ int main () {
 	// Seed with a real random value, if available.
     std::random_device r;
     // Range of possible random values. This might become a user input as well.
-    auto lower(0), upper(31); // Range of value
+    auto lower(0), upper(MAX_RANGE); // Range of value
     // Fill it up with random integers.
     randomFill(V, lower, upper, r());
 
-    std::sort(V.begin(), V.end());
+    std::sort(std::begin(V), std::end(V));
 
-    for (auto i)
-
-
-    std::cout << "Número a ser buscado : " << std::endl;
+    std::cout << "Número a ser buscado : ";
     std::cin >> target;
 
 
-    for ( auto i(32), auto z(0); i < MAX_RANGE; i *= 4, z++) {
+    for ( auto i(32), count = 0; i < MAX_RANGE; i *= 2, count++) {
 
     	for ( auto j(0); j < 8; ++j ) {
 
-    		sum_data = 0;
+    		std::chrono::duration<double, std::milli> sum_data(0);
     		
     		for ( auto k(0); k < 100; k++) {
 
     			auto start = std::chrono::steady_clock::now();
 
-    			fun_ptr[j] (V.begin(), V.begin()+i, target);
+    		    fun_ptr[j](&V.front(), &V[32], target);
 
     			auto end = std::chrono::steady_clock::now();
 
@@ -81,15 +77,32 @@ int main () {
 
     			sum_data += diff;
 
-    			
-
     		}
 
+            database[count][j] = sum_data/100;
 
     	}
 
     }
 
+
+   std::cout.precision(6);
+   std::cout << ">>> | ILS | RLS | SLS | RBS | SBS | ITS | RTS | ALL | \n";
+   
+   for (auto i(32), count=0; i < MAX_RANGE; i*=2, count++) {
+        
+        std::cout << i << " | ";
+
+        for (auto j(0); j < 8; ++j) {
+
+             std::cout << std::fixed << std::chrono::duration <double, std::milli> (database[count][j]).count() << " | ";
+
+        }
+
+        std::cout << std::endl;
+
+    }
+    
 
     return 0;
 
