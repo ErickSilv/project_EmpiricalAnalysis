@@ -1,214 +1,134 @@
-#include <iostream>
-#include <cassert> //std::assert()
+#include <iostream> // Temporary
+#include <algorithm>
 
-#include "algorithms.h"
+#include "../include/algorithms.h"
 
-/*int main() {
+// List of all possible flags
+// | ILS | RLS | SLS | RBS | SBS | ITS | RTS | ALL |
 
-	int A[] = {10, 20, 30, 40, 50, 60, 70, 80};
-	auto size_a = sizeof(A)/sizeof(int);
-
-	auto result = binary_search_interactive(A, 0, size_a-1, 80);
-	cout << result << endl;
-	assert(result == 7);
-
-
-	result = binary_search_interactive(A, 0, size_a-1, 40);
-	cout << result << endl	;
-	assert(result == 3);
-
-	result = binary_search_interactive(A, 0, size_a-1, 90);
-	cout << result << endl	;
-	assert(result == -1);
-
-
-	return 0;
-
-
-}*/
-
+// Iterative Linear Search [ILS]
 /*!
- *Busca a primeira ocorrência de um elemento em um arranjo
- * A função realiza a busca de 'd' nos indices [b;c] de 'A'.
+ * Busca a primeira ocorrência de um elemento em um arranjo
+ * A função realiza a busca de 'd' no intervalo de memória [first, last).
+ * // INSERIR AQUI DESCRIÇÃO DO ALGORITMO
  *
- * \param V Vetor ara realização de busca.
- * \param l Indice do vetor que define o inicio do intervao de busca no vetor.
- * \param r Indice do vetor que define o fim do intervalo de busca no vetor
- * \param key Elemento a ser procurado no vetor.
+ * \param first Primeiro endereço de memória a ser procurado
+ * \param last Primeiro endereço de memória APÓS o último endereço a ser procurando
+ * \param target Elemento a ser procurando dentro do intervalo
  *
- * return 0 indice de 'key' em 'V', se encontrar, ou -1, caso contrário.
+ * return Caso o target seja encontrado no intervalo, retorna o índice. Caso contrário, retorna -1.
  */
+int seqSearch_it  ( int* first, int* last, int target ) {
 
-
-int linear_search_interactive(param_type* V, size_t l, size_t r, param_type key) {
-
-	for (auto i(l); i < r-1; i++) {
-		
-		if (V[i] == key) {
-		
-			return i;
-		
-		}
-
-	}
-
-	return -1;
+    for ( auto aux(first) ; aux < last ; aux++ ) {
+        if ( *aux==target ) {
+            return (aux - first); // Calculating the index
+        }
+    }
+    
+    return -1;
 }
 
-int linear_search_recursive(param_type* V, size_t l, size_t r, param_type key) {
+// Recursive Linear Search [RLS]
+int seqSearch_rc ( int* first, int* last, int target ) {
+    
+    // Caso base - não encontrado
+    if (first >= last) {
+        return -1;
+    } 
 
-	if ( key == V [ l ] ) {
-		return l;
-	} else if ( l <= r ) {
-		linear_search_recursive(V, l+1, r, key);
-	} else {
-		return -1;
-	}
+    // Caso base - encontrado
+    if (*first==target) {
+        return (first - first);
+    } else {
+        // Caso recursivo
+        int value = seqSearch_rc( first+1 , last , target );
+
+        if (value==-1) { // Retorna -1 sem incrementar
+            return value;
+        } else { // Incrementa o valor retornado no número de vezes em que ocorre a recursão
+            return value+1;
+        }
+    }
+
+    //{ 10 , 20, 30, 40, 50, 60, 80, 90, 100 }
+    // FIRST : 0 1 2 3 4 5 6 7 8
+    // LAST  : 9 9 9 9 9 9 9 9 9 
+    // RETURN: X X X X X X X X 0
 }
 
-int binary_search_interactive(param_type* V, size_t l, size_t r, param_type key) {
+// Standard Linear Search [SLS]
+int seqSearch_std ( int* first, int* last, int target ) {
 
-	if (key < V[l] || key > V[r]) {
+    int* pointer = std::find( first , last , target );
 
-		return -1;
+    if (pointer == last) {
+        return -1;
+    } else {
+        return (pointer - first);
+    }
+}
 
-	}
-	
-	while (r > l) {
+// Iterative Binary Search [IBS]
+int binarySearch_it  ( int* first, int* last, int target ) {
 
-		if (key < V[ (l+r)/2 ]) {
+    auto auxF(first);
+    auto auxL(last);
+    int* midPointer;
 
-			r = (l+r)/2 - 1;
-		
-		} else if (key > V[ (l+r)/2]) {
-		
-			l = (l+r)/2 + 1;
-		
-		} else {
-			std::cout << (l+r)/2 << std::endl;
-			return (l+r)/2;
-		
-		}
+    while( first <= last ) {
 
-	}
+        midPointer = first + (last - first) / 2;
 
+        if (*midPointer == target) {
+            int* position = std::lower_bound( auxF , auxL , target );
+            return (position - auxF);
+        } else if (*midPointer > target) {
+            last = midPointer - 1;
+        } else if (*midPointer < target) {
+            first = midPointer + 1;
+        } 
+    }
 
-	
+    return -1;
+}
+
+// Recursive Binary Search [RBS]
+int binarySearch_rc  ( int* first, int* last, int target ) {
+    if (first > last) {
+        return -1;
+    }
+
+    int* midPointer = first + (last - first) / 2;
+
+    if (*midPointer == target) {
+        return (midPointer - first);
+    } else if (*midPointer > target) {
+        return binarySearch_rc( first , midPointer - 1 , target );
+    } else if (*midPointer < target) {
+        return binarySearch_rc( midPointer + 1 , last , target );
+    }
+}
+
+// Standard Binary Search [SBS]
+int binarySearch_std ( int* first, int* last, int target ) {
+
+    bool isThere = std::binary_search( first , last , target );
+    if (isThere) {
+        int* position = std::lower_bound( first , last , target );
+        return (position - first);
+    } else {
+        return -1;
+    }
 
 }
 
-
-int binary_search_recursive(param_type* V, size_t l, size_t r, param_type key) {
-
-	if (key < V[l] || key > V[r]){
-
-		return -1; 
-
-	} else if ( r - l == 1 ) {
-
-		if ( V[r] == key ) {
-			return r;
-		} else {
-			return l;
-		}
-
-	} else {	
-
-		if (key < V[ (l+r)/2 ]) {
-			
-			r = (l+r)/2;
-			binary_search_recursive(V, l, r-1, key);
-
-		} else if (key > V[ (l+r)/2 ]){ 
-
-			l = (l+r)/2;
-			binary_search_recursive(V, l+1, r, key);
-
-		} else {
-
-			return (r/2);
-
-		} 
-
-	}
+// Iterative Ternary Search [ITS]
+int ternarySearch_it( int* first, int* last, int target ) {
+    return -2; // Not implemented yet
 }
 
-int ternary_search_interactive(param_type* V, size_t l, size_t r, param_type key){ 
-
-}
-
-int ternary_search_recursive(param_type* V, size_t l, size_t r, param_type key){
-
-	int first_divide = (l+r)/3;
-	int second_divide = ((l+r)/3)*2;
-
-	if ( r < l ) {
-
-		return -1;
-
-	} else if ( r - l == 1 or r == l) {
-
-		if ( V[r] == key ) {
-			return r;
-		} else if ( V[l] == key ){
-			return l;
-		} else {
-			return -1;
-		}
-
-	} else if ( r - l == 2 ) {
-
-		if ( V[r] == key ) {
-			return r;
-		} else if ( V[r+1] == key ) {
-			return r+1;
-		} else if ( V[l]==key ) {
-			return l;
-		} else {
-			return -1;
-		}
-
-	} else {
-
-		if (key > V[l] && key < V[first_divide]) {
-
-			ternary_search_recursive(V, l, first_divide-1, key);
-
-		} else if (key > V[first_divide] && key < V[second_divide]) {
-
-			ternary_search_recursive(V, first_divide+1, second_divide-1, key);
-
-		} else if (key > V[second_divide] && key < V[r]) {
-
-			ternary_search_recursive(V, second_divide, r, key);
-
-		} else {
-
-
-			if(key == V[l]) {
-
-				return l;
-			
-			} else if(key == V[first_divide]) {
-			
-				return first_divide;
-			
-			} else if(key == V[second_divide]) {
-			
-				return second_divide;
-			
-			} else if (key == V[r]) {
-
-				return r;
-
-			} else {
-
-				return -1;
-
-			}
-
-		
-		}
-
-	}
+// Recursive Ternary Search [RTS]
+int ternarySearch_rc( int* first, int* last, int target ) {
+    return -2; // Not implemented yet
 }
